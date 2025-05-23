@@ -1,10 +1,14 @@
+"use client";
+
 import { BodyContainer } from "@/components/BodyContainer";
 import { CardContainer } from "@/components/CardContainer";
 import { Header } from "@/components/Header";
+import { InsertTransactionDialog } from "@/components/InsertTransactionDialog";
 import { TransactionList } from "@/components/TransactionList";
 import { ITransaction } from "@/interfaces/transaction";
+import { useState } from "react";
 
-const transactions: ITransaction[] = [
+const initTransactions: ITransaction[] = [
   {
     id: 4,
     title: "Desenvolvimento de site",
@@ -36,13 +40,30 @@ const transactions: ITransaction[] = [
     type: "income",
     category: "Venda",
     createdAt: new Date("2023-10-01"),
-  }
+  },
 ];
 
 export default function Home() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [transactions, setTransactions] =
+    useState<ITransaction[]>(initTransactions);
+
   return (
     <div>
-      <Header />
+      <Header onNewTransaction={() => setDialogOpen(true)} />
+      <InsertTransactionDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={(transaction) => {
+          transactions.push({
+            ...transaction,
+            id: transactions.length + 1,
+            createdAt: new Date(),
+          });
+          setTransactions([...transactions]);
+          setDialogOpen(false);
+        }}
+      />
       <BodyContainer>
         <CardContainer />
         <TransactionList list={transactions} />
